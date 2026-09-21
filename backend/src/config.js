@@ -15,6 +15,11 @@ function intFromEnv(name, fallback) {
   return value;
 }
 
+// A relative path (contains a slash) is resolved against the backend working directory;
+// otherwise spawn() would resolve it against the pipeline's cwd (scraper/). Bare names use PATH.
+const rawPython = process.env.PYTHON_BIN || "python3";
+const pythonBin = /[\\/]/.test(rawPython) ? path.resolve(process.cwd(), rawPython) : rawPython;
+
 export const config = {
   port: intFromEnv("PORT", 4000),
   databaseUrl: process.env.DATABASE_URL || "",
@@ -23,7 +28,7 @@ export const config = {
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean),
-  pythonBin: process.env.PYTHON_BIN || "python3",
+  pythonBin,
   pipelineScript:
     process.env.PIPELINE_SCRIPT || path.join(repoRoot, "scraper", "pipeline.py"),
   schemaPath: path.join(repoRoot, "db", "schema.sql"),

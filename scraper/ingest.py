@@ -1,7 +1,7 @@
 """Fetches feeds, dedupes against the DB, extracts bodies for NEW articles only, stores them."""
 import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import feedparser
 import requests
@@ -31,10 +31,13 @@ def fetch_feed(feed: dict) -> list:
     if parsed.bozo and not parsed.entries:
         raise ValueError(f"unparseable feed: {parsed.bozo_exception}")
     now = datetime.now(timezone.utc)
+    # Items older than the retention window would be pruned right after insert and
+    # re-fetched on every run, so they are skipped up front.
+    cutoff = now - timedelta(days=config.RETENTION_DAYS)
     items = []
     for entry in parsed.entries[: config.MAX_ENTRIES_PER_FEED]:
         item = normalize_entry(entry, feed["source"], now)
-        if item:
+        if item and item["published_at"] >= cutoff:
             items.append(item)
     return items
 
