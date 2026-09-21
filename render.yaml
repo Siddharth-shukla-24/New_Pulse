@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: news-pulse-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: PYTHON_BIN
+        value: /opt/venv/bin/python
+      - key: PIPELINE_TIMEOUT_MS
+        value: "240000"
