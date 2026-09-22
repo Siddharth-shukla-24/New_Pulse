@@ -24,8 +24,8 @@ const MIN_CANVAS_WIDTH = 760;
 
 const LABEL_FONT = "600 12px Inter, system-ui, sans-serif";
 const BADGE_FONT = "700 10.5px ui-monospace, SFMono-Regular, Menlo, monospace";
-const HUE_SAT = 62;
-const HUE_LIGHT = 56;
+const HUE_SAT = 52;
+const HUE_LIGHT = 54;
 
 const STEPS = [30 * MINUTE, HOUR, 2 * HOUR, 3 * HOUR, 6 * HOUR, 12 * HOUR, DAY, 2 * DAY, 7 * DAY];
 
@@ -250,7 +250,7 @@ export default function Timeline({ items, selectedId, onSelect, domain }: Timeli
                       fontSize={11}
                       fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace"
                       fontWeight={tick.major ? 700 : 500}
-                      fill={tick.major ? "#e7e9f0" : "#7a8398"}
+                      fill={tick.major ? "#e7e9f0" : "#8891a4"}
                     >
                       {tick.label}
                     </text>
@@ -301,6 +301,8 @@ export default function Timeline({ items, selectedId, onSelect, domain }: Timeli
                     onMouseMove={(e) => setHover({ item: bar.item, x: e.clientX, y: e.clientY })}
                     onMouseLeave={() => setHover(null)}
                   >
+                    {/* Native tooltip: makes the full label discoverable even when the drawn label is truncated or hidden for space. */}
+                    <title>{`${bar.item.label}, ${bar.item.articleCount} article${bar.item.articleCount === 1 ? "" : "s"}`}</title>
                     <rect x={bar.x - 4} y={laneTop} width={bar.w + 8} height={LANE_HEIGHT} fill="transparent" />
                     <rect
                       className="bar-body"
@@ -334,7 +336,7 @@ export default function Timeline({ items, selectedId, onSelect, domain }: Timeli
                           height={BADGE_HEIGHT}
                           rx={BADGE_HEIGHT / 2}
                           fill="#1a2130"
-                          stroke="#2a3348"
+                          stroke="#232b3d"
                         />
                         <text
                           x={bar.badgeX + bar.badgeWidth / 2}
