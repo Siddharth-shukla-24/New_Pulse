@@ -152,12 +152,10 @@ export default function HomePage() {
     <main className="page">
       <header className="header">
         <div className="brand">
-          <h1>
-            News <span>Pulse</span>
-          </h1>
+          <h1>News Pulse</h1>
           <p>Live headlines from multiple outlets, grouped into topics and plotted over time.</p>
         </div>
-        <div className="toolbar-group">
+        <div className="header-actions">
           {ingest.message && (
             <span
               className={`status ${ingest.phase === "completed" ? "ok" : ingest.phase === "failed" ? "err" : ""}`}
@@ -174,31 +172,36 @@ export default function HomePage() {
       </header>
 
       <div className="toolbar">
-        <SourceFilter
-          sources={allSources}
-          enabled={enabled ?? []}
-          onToggle={toggleSource}
-          onAll={() => setEnabled(allSources.map((s) => s.name))}
-        />
-        <div className="toolbar-group">
-          <span className="toolbar-label">Window</span>
-          <div className="segmented" role="group" aria-label="Time window">
-            {RANGES.map((range) => (
-              <button
-                key={range.label}
-                type="button"
-                aria-pressed={rangeHours === range.hours}
-                onClick={() => setRangeHours(range.hours)}
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
+        <div className="toolbar-row">
+          <SourceFilter
+            sources={allSources}
+            enabled={enabled ?? []}
+            onToggle={toggleSource}
+            onAll={() => setEnabled(allSources.map((s) => s.name))}
+          />
         </div>
-        <label className="toggle">
-          <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />
-          Auto-refresh (60s)
-        </label>
+        <div className="toolbar-row">
+          <div className="toolbar-group">
+            <span className="toolbar-label">Window</span>
+            <div className="segmented" role="group" aria-label="Time window">
+              {RANGES.map((range) => (
+                <button
+                  key={range.label}
+                  type="button"
+                  aria-pressed={rangeHours === range.hours}
+                  onClick={() => setRangeHours(range.hours)}
+                >
+                  {range.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <label className="toggle">
+            <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />
+            <span className="live-dot pulsing" aria-hidden="true" style={{ opacity: autoRefresh ? 1 : 0 }} />
+            Auto-refresh (60s)
+          </label>
+        </div>
       </div>
 
       {error && <div className="banner">{error}</div>}
@@ -209,24 +212,24 @@ export default function HomePage() {
             <h2>
               {visibleItems.length} topic{visibleItems.length === 1 ? "" : "s"} · {totalArticles} articles
             </h2>
-            <span className="muted">
+            <span className="muted mono">
               {timeline ? `Updated ${timeAgo(timeline.generatedAt)}` : loading ? "Loading…" : ""}
-              {timeline?.range ? ` · data through ${formatDateTime(timeline.range.end)}` : ""}
+              {timeline?.range ? ` · through ${formatDateTime(timeline.range.end)}` : ""}
             </span>
           </div>
           {loading && !timeline ? (
-            <>
+            <div style={{ padding: "16px 0" }}>
               <div className="skeleton" style={{ width: "40%" }} />
               <div className="skeleton" style={{ width: "75%" }} />
               <div className="skeleton" style={{ width: "55%" }} />
               <div className="skeleton" style={{ width: "65%" }} />
-            </>
+            </div>
           ) : (
             <Timeline items={visibleItems} selectedId={selectedId} onSelect={setSelectedId} domain={domain} />
           )}
           <div className="legend">
-            Bar length = window in which the topic was active · thicker/bolder bar = more articles · click a bar for
-            its articles.
+            Bar length marks how long a topic stayed active, height marks article volume, and the badge is the
+            article count. Click a bar to open its articles.
           </div>
         </section>
 

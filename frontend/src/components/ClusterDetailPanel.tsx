@@ -30,27 +30,30 @@ export default function ClusterDetailPanel({
       </div>
 
       {!hasSelection && (
-        <div className="empty">Click a topic on the timeline to see its articles.</div>
+        <div className="empty">
+          <p className="empty-title">Nothing selected</p>
+          <p className="empty-body">Click a topic on the timeline to see its articles here.</p>
+        </div>
       )}
 
       {hasSelection && error && <div className="banner" style={{ margin: 16 }}>{error}</div>}
 
       {hasSelection && !detail && !error && loading && (
-        <>
+        <div style={{ padding: "4px 0 16px" }}>
           <div className="skeleton" style={{ width: "70%" }} />
           <div className="skeleton" />
           <div className="skeleton" style={{ width: "85%" }} />
           <div className="skeleton" />
-        </>
+        </div>
       )}
 
       {detail && (
         <div className="detail-body">
           <h3 className="detail-title">{detail.label}</h3>
-          <div className="muted">
+          <p className="muted detail-meta">
             {detail.articleCount} article{detail.articleCount === 1 ? "" : "s"} ·{" "}
-            {formatRange(detail.startTime, detail.endTime)}
-          </div>
+            <span className="mono">{formatRange(detail.startTime, detail.endTime)}</span>
+          </p>
           <div className="pills">
             {detail.sources.map((s) => (
               <span key={s} className="pill">
@@ -60,7 +63,7 @@ export default function ClusterDetailPanel({
           </div>
 
           {detail.articles.length === 0 ? (
-            <div className="muted">No articles from the selected sources.</div>
+            <p className="muted">No articles from the selected sources.</p>
           ) : (
             <ol className="articles">
               {detail.articles.map((article) => (
@@ -71,6 +74,7 @@ export default function ClusterDetailPanel({
                   <div className="meta">
                     <span className="pill">{article.source}</span>
                     <span
+                      className="mono"
                       title={
                         article.publishedInferred
                           ? "The feed had no valid publish time; the fetch time is shown instead."

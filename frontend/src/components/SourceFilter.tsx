@@ -11,23 +11,27 @@ interface SourceFilterProps {
 
 export default function SourceFilter({ sources, enabled, onToggle, onAll }: SourceFilterProps) {
   const allOn = sources.length > 0 && sources.every((s) => enabled.includes(s.name));
+  const total = sources.reduce((sum, s) => sum + s.articleCount, 0);
+
   return (
     <div className="toolbar-group" role="group" aria-label="Filter by news source">
       <span className="toolbar-label">Sources</span>
-      <button type="button" className="chip" aria-pressed={allOn} onClick={onAll}>
-        All
-      </button>
-      {sources.map((source) => (
-        <button
-          key={source.name}
-          type="button"
-          className="chip"
-          aria-pressed={enabled.includes(source.name)}
-          onClick={() => onToggle(source.name)}
-        >
-          {source.name} <small>{source.articleCount}</small>
+      <div className="chip-row">
+        <button type="button" className="chip" aria-pressed={allOn} onClick={onAll}>
+          All <small className="mono">{total}</small>
         </button>
-      ))}
+        {sources.map((source) => (
+          <button
+            key={source.name}
+            type="button"
+            className="chip"
+            aria-pressed={enabled.includes(source.name)}
+            onClick={() => onToggle(source.name)}
+          >
+            {source.name} <small className="mono">{source.articleCount}</small>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
